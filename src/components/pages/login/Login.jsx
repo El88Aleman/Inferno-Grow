@@ -39,7 +39,7 @@ const Login = () => {
     e.preventDefault();
     try {
       const res = await onSignIn(userCredentials);
-      if (res.user) {
+      if (res?.user) {
         const userCollection = collection(db, "users");
         const userRef = doc(userCollection, res.user.uid);
         const userDoc = await getDoc(userRef);
@@ -57,7 +57,12 @@ const Login = () => {
 
   const googleSingIn = async () => {
     let res = await loginGoogle();
-    console.log(res);
+    let finalyUser = {
+      email: res.user.email,
+      rol: "user",
+    };
+    handleLogin(finalyUser);
+    navigate("/");
   };
 
   return (
@@ -94,9 +99,9 @@ const Login = () => {
               </InputLabel>
               <OutlinedInput
                 name="password"
+                onChange={handleChange}
                 id="outlined-adornment-password"
                 type={showPassword ? "text" : "password"}
-                onChange={handleChange}
                 endAdornment={
                   <InputAdornment position="end">
                     <IconButton

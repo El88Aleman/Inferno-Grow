@@ -1,16 +1,70 @@
 import { initMercadoPago, Wallet } from "@mercadopago/sdk-react";
 import { CartContext } from "../../../context/CartContext";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { Button } from "@mui/material";
+import { Button, Link, TextField } from "@mui/material";
+import { AuthContext } from "../../../context/AuthContext";
+import { useLocation } from "react-router-dom";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
+import { db } from "../../../firebaseConfig";
 
 const Checkout = () => {
-  const { cart } = useContext(CartContext);
+  const { cart, getTotalPrice, clearCart } = useContext(CartContext);
+  const { user } = useContext(AuthContext);
   initMercadoPago(import.meta.env.VITE_PUBLICKEY, {
     locale: "es-AR",
   });
 
   const [preferenceId, setPreferenceId] = useState(null);
+  const [userData, setUserData] = useState({
+    cp: "",
+    phone: "",
+  });
+
+  const [orderId, SetOrderId] = useState(null);
+  const [shipmentCost, setShipmentCost] = useState(0);
+
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const paramValue = queryParams.get("status");
+
+  useEffect(() => {
+    let order = JSON.parse(localStorage.getItem("order"));
+    if (paramValue === "approved") {
+      let ordersCollection = collection(db, "orders");
+      addDoc(ordersCollection, { ...order, date: serverTimestamp() }).then(
+        (res) => {
+          SetOrderId(res.id);
+        }
+      );
+
+      order.items.forEach((elemento) => {
+        updateDoc(doc(db, "products", elemento.id), {
+          stock: elemento.stock - elemento.quantity,
+        });
+      });
+
+      localStorage.removeItem("order");
+      clearCart();
+    }
+  }, [paramValue]);
+
+  useEffect(() => {
+    let shipmentCollection = collection(db, "shipment");
+    let shipmentDoc = doc(shipmentCollection, "vbYaDEHiKXZVdukDnA9f");
+    getDoc(shipmentDoc).then((res) => {
+      setShipmentCost(res.data().cost);
+    });
+  }, []);
+
+  let total = getTotalPrice();
 
   const createPreference = async () => {
     const newArray = cart.map((product) => {
@@ -25,7 +79,7 @@ const Checkout = () => {
         "http://localhost:8080/create_preference",
         {
           items: newArray,
-          shipment_cost: 2500,
+          shipment_cost: shipmentCost,
         }
       );
       const { id } = response.data;
@@ -35,14 +89,62 @@ const Checkout = () => {
     }
   };
   const handleBuy = async () => {
+    let order = {
+      nombreApellido: userData.nombreApellido,
+      cp: userData.cp,
+      phone: userData.phone,
+      direccion: userData.direccion,
+      items: cart,
+      total: total + shipmentCost,
+      email: user.email,
+    };
+    localStorage.setItem("order", JSON.stringify(order));
     const id = createPreference();
     if (id) {
       setPreferenceId(id);
     }
   };
+  const handleChange = (e) => {
+    setUserData({ ...userData, [e.target.name]: e.target.value });
+  };
+
   return (
     <div>
-      <Button onClick={handleBuy}>Seleccione metodo de pago</Button>
+      {!orderId ? (
+        <>
+          <TextField
+            name="nombreApellido"
+            variant="outlined"
+            label="Nombre y Apellido"
+            onChange={handleChange}
+          />
+          <TextField
+            name="cp"
+            variant="outlined"
+            label="Codigo Postal"
+            onChange={handleChange}
+          />
+          <TextField
+            name="direccion"
+            variant="outlined"
+            label="Direccion"
+            onChange={handleChange}
+          />
+          <TextField
+            name="phone"
+            variant="outlined"
+            label="Telefono"
+            onChange={handleChange}
+          />
+          <Button onClick={handleBuy}>Seleccione Metodo De Pago</Button>
+        </>
+      ) : (
+        <>
+          <h4>El pago se realizo con exito</h4>
+          <h4>Su numero de compra es {orderId}</h4>
+          <Link to="/shop">Seguir Comprando</Link>
+        </>
+      )}
       {preferenceId && (
         <Wallet initialization={{ preferenceId, redirectMode: "self" }} />
       )}

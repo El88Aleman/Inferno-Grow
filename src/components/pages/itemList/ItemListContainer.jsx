@@ -23,7 +23,11 @@ const ItemListContainer = () => {
       {products.map((product) => {
         return (
           <div key={product.id}>
-            <img src="{product.image}" style={{ width: "200px" }} alt="" />
+            <img
+              src={product.image}
+              style={{ width: "400px", heigth: "500px" }}
+              alt=""
+            />
             <h4>{product.title}</h4>
             <h4>${product.unit_price}</h4>
             <h4>{product.stock}</h4>

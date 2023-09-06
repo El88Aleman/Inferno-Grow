@@ -50,7 +50,7 @@ const ItemDetail = () => {
           <h2>{product.title}</h2>
           <img
             src={product.image}
-            style={{ width: "200px", heigth: "300px" }}
+            style={{ width: "600px", heigth: "700px" }}
             alt=""
           />
         </div>

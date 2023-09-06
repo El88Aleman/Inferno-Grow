@@ -103,7 +103,7 @@ function Navbar(props) {
           sx={{ gap: "20px", display: "flex", justifyContent: "space-between" }}
         >
           <Link to="/" style={{ color: "whitesmoke" }}>
-            Bazar-deco
+            Inferno-Grow
           </Link>
           <IconButton
             color="secondary.primary"
