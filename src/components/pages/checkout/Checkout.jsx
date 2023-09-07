@@ -58,11 +58,12 @@ const Checkout = () => {
 
   useEffect(() => {
     let shipmentCollection = collection(db, "shipment");
-    let shipmentDoc = doc(shipmentCollection, "vbYaDEHiKXZVdukDnA9f");
+    let shipmentDoc = doc(shipmentCollection, "cYyeQYK5x30ADUVNr6iH");
     getDoc(shipmentDoc).then((res) => {
       setShipmentCost(res.data().cost);
     });
   }, []);
+  console.log("shipmentCost");
 
   let total = getTotalPrice();
 
