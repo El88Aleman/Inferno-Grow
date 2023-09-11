@@ -48,7 +48,7 @@ const Login = () => {
           rol: userDoc.data().rol,
         };
         handleLogin(finalyUser);
-        navigate("/");
+        navigate("/shop");
       }
     } catch (error) {
       console.log(error);
@@ -62,7 +62,7 @@ const Login = () => {
       rol: "user",
     };
     handleLogin(finalyUser);
-    navigate("/");
+    navigate("/shop");
   };
 
   return (

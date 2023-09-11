@@ -63,7 +63,6 @@ const Checkout = () => {
       setShipmentCost(res.data().cost);
     });
   }, []);
-  console.log("shipmentCost");
 
   let total = getTotalPrice();
 
