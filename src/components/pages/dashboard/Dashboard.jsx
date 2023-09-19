@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { db } from "../../../firebaseConfig";
 import { collection, getDocs, updateDoc, doc } from "firebase/firestore";
-import ProductsList from "./productsList";
+import ProductsList from "./ProductsList";
 import { Box, Button, Modal, TextField } from "@mui/material";
 const style = {
   position: "absolute",
