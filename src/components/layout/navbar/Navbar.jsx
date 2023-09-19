@@ -102,7 +102,7 @@ function Navbar(props) {
         <Toolbar
           sx={{ gap: "20px", display: "flex", justifyContent: "space-between" }}
         >
-          <Link to="/" style={{ color: "whitesmoke" }}>
+          <Link to="/shop" style={{ color: "whitesmoke" }}>
             Inferno-Grow
           </Link>
           <IconButton

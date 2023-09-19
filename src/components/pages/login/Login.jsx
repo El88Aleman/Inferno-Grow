@@ -16,7 +16,7 @@ import GoogleIcon from "@mui/icons-material/Google";
 import { Link, useNavigate } from "react-router-dom";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useContext, useState } from "react";
-import { db, loginGoogle, onSignIn } from "../../../firebaseConfig";
+import { db, loginGoogle, onSigIn } from "../../../firebaseConfig";
 import { collection, doc, getDoc } from "firebase/firestore";
 import { AuthContext } from "../../../context/AuthContext";
 
@@ -38,7 +38,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await onSignIn(userCredentials);
+      const res = await onSigIn(userCredentials);
       if (res?.user) {
         const userCollection = collection(db, "users");
         const userRef = doc(userCollection, res.user.uid);
@@ -56,7 +56,9 @@ const Login = () => {
   };
 
   const googleSingIn = async () => {
+    console.log("se ejectuto");
     let res = await loginGoogle();
+    console.log(res);
     let finalyUser = {
       email: res.user.email,
       rol: "user",

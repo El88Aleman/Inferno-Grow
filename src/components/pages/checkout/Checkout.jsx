@@ -99,7 +99,7 @@ const Checkout = () => {
       email: user.email,
     };
     localStorage.setItem("order", JSON.stringify(order));
-    const id = createPreference();
+    const id = await createPreference();
     if (id) {
       setPreferenceId(id);
     }

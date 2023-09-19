@@ -1,4 +1,5 @@
 import { initializeApp } from "firebase/app";
+
 import {
   signInWithEmailAndPassword,
   getAuth,
@@ -8,7 +9,11 @@ import {
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
 } from "firebase/auth";
+
 import { getFirestore } from "firebase/firestore";
+
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { v4 } from "uuid";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_APIKEY,
@@ -22,21 +27,29 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 const auth = getAuth(app);
-
 export const db = getFirestore(app);
+const storage = getStorage(app);
 
-export const onSignIn = async ({ email, password }) => {
+// LOS SERVICIOS
+
+// auth
+
+// Login
+
+export const onSigIn = async ({ email, password }) => {
   try {
-    const res = signInWithEmailAndPassword(auth, email, password);
+    const res = await signInWithEmailAndPassword(auth, email, password);
     return res;
   } catch (error) {
     console.log(error);
   }
 };
+// logout
 
 export const logout = () => {
   signOut(auth);
 };
+// login con google
 
 let googleProvider = new GoogleAuthProvider();
 
@@ -45,12 +58,25 @@ export const loginGoogle = async () => {
   return res;
 };
 
+// registro
+
 export const signUp = async ({ email, password }) => {
   let res = await createUserWithEmailAndPassword(auth, email, password);
   return res;
 };
 
+// olvide la contraseña
+
 export const forgotPassword = async (email) => {
   let res = await sendPasswordResetEmail(auth, email);
   return res;
+};
+
+// storage
+
+export const uploadFile = async (file) => {
+  const storageRef = ref(storage, v4());
+  await uploadBytes(storageRef, file);
+  let url = await getDownloadURL(storageRef);
+  return url;
 };
